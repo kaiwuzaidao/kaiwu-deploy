@@ -1,0 +1,3 @@
+*.tmp
+*.rendered.yaml
+.DS_Store

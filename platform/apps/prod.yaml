@@ -1,0 +1,32 @@
+# Kaiwu 平台在 prod 环境的 ArgoCD Application。
+#
+# 占位符必须替换：REPLACE_ME_CHART_REPO、REPLACE_ME_DEPLOY_REPO、REPLACE_ME_CHART_REVISION。
+# chart 来自 kaiwu-system-service 仓的 deploy/helm/kaiwu，环境值来自本仓 platform/envs/prod。
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kaiwu-prod
+  namespace: argocd
+spec:
+  project: kaiwu-platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kaiwu-prod
+  sources:
+    - repoURL: REPLACE_ME_CHART_REPO
+      targetRevision: REPLACE_ME_CHART_REVISION   # 不可变 tag，例如 v0.1.0；不要用分支
+      path: deploy/helm/kaiwu
+      helm:
+        valueFiles:
+          - $values/platform/envs/prod/values.yaml
+    - repoURL: REPLACE_ME_DEPLOY_REPO
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      # 迁移 ConfigMap 的体积超过 kubectl last-applied 注解上限，必须服务端应用。
+      - ServerSideApply=true
+      - CreateNamespace=true

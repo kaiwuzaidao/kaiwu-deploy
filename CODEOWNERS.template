@@ -1,0 +1,11 @@
+# 复制为 CODEOWNERS 并替换为你自己组织里真实存在的用户或 Group。
+#
+# 原则：业务目录由项目团队负责，平台运维作为必需审核方；
+# 平台环境值与 Gateway 路由只由平台运维负责——那是外部入口，不能由业务方自审。
+
+/platform/            @REPLACE_ME_PLATFORM_OPS
+/gateway-routes/      @REPLACE_ME_PLATFORM_OPS
+/scripts/             @REPLACE_ME_PLATFORM_OPS
+
+# 每个业务项目一行，项目团队 + 平台运维双签：
+# /projects/<projectCode>/   @REPLACE_ME_TEAM @REPLACE_ME_PLATFORM_OPS

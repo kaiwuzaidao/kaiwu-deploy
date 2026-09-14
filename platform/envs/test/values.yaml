@@ -1,0 +1,65 @@
+# Kaiwu 平台 test 环境的取值覆盖。Chart 默认值见 kaiwu-system-service 仓
+# deploy/helm/kaiwu/values.yaml；这里只写与默认不同的部分。
+#
+# 本文件不保存任何 Secret。运行密钥由 kaiwu-runtime Secret 提供，见
+# kaiwu-system-service/docs/KUBERNETES.md 的 Secret 键表。
+#
+# 所有 REPLACE_ME_ 占位符必须替换后才能通过 scripts/check.sh。
+images:
+  system:
+    repository: REPLACE_ME_REGISTRY/kaiwu-system-service
+    tag: REPLACE_ME_IMAGE_TAG            # 不可变 tag 或 digest，不要用 latest
+    pullPolicy: IfNotPresent
+  gateway:
+    repository: REPLACE_ME_REGISTRY/kaiwu-gateway-service
+    tag: REPLACE_ME_IMAGE_TAG
+    pullPolicy: IfNotPresent
+  web:
+    repository: REPLACE_ME_REGISTRY/kaiwu-system-web
+    tag: REPLACE_ME_IMAGE_TAG
+    pullPolicy: IfNotPresent
+
+runtimeSecret:
+  existingSecret: kaiwu-runtime
+
+database:
+  embedded: false
+  host: REPLACE_ME_MYSQL_HOST
+  port: 3306
+  name: kaiwu_platform
+  username: kaiwu
+
+redis:
+  embedded: false
+  host: REPLACE_ME_REDIS_HOST
+  port: 6379
+
+system:
+  # 制品目录是 RWO PVC，单副本 + Recreate。迁到共享存储并验证并发后才可扩容。
+  replicaCount: 1
+  artifactPersistence:
+    enabled: true
+    storageClass: REPLACE_ME_STORAGE_CLASS
+    size: 20Gi
+
+gateway:
+  replicaCount: 1
+  # 业务项目的 PROJECT 路由由本仓 gateway-routes/test 渲染成只读 ConfigMap 挂入。
+  # 与 gateway.managedRoutes 互斥，不要同时配置。
+  managedRoutesExistingConfigMap: kaiwu-project-routes
+
+web:
+  replicaCount: 1
+
+ingress:
+  enabled: true
+  className: REPLACE_ME_INGRESS_CLASS
+  hosts:
+    - host: REPLACE_ME_PLATFORM_HOST
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: kaiwu-tls
+      hosts:
+        - REPLACE_ME_PLATFORM_HOST

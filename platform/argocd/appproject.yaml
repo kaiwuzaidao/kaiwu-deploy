@@ -1,0 +1,23 @@
+# Kaiwu 平台自身的 AppProject。
+#
+# 占位符必须替换：REPLACE_ME_DEPLOY_REPO、REPLACE_ME_CHART_REPO。
+# 只允许平台自己的两个来源仓与两个 namespace，越界的 Application 会被 ArgoCD 拒绝。
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: kaiwu-platform
+  namespace: argocd
+spec:
+  description: Kaiwu 控制面（平台自身，不含业务项目）
+  sourceRepos:
+    - REPLACE_ME_DEPLOY_REPO      # 本部署仓，例如 https://github.com/your-org/kaiwu-deploy.git
+    - REPLACE_ME_CHART_REPO       # Chart 所在仓，例如 https://github.com/your-org/kaiwu-system-service.git
+  destinations:
+    - namespace: kaiwu-test
+      server: https://kubernetes.default.svc
+    - namespace: kaiwu-prod
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
