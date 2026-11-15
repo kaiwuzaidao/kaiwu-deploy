@@ -8,12 +8,13 @@
 自动暴露服务。任一路由缺少 `PROJECT` 元数据、或 id 重复，Gateway 启动即失败——
 宁可起不来，也不要把一个没人审过的服务暴露到外网。
 
-渲染（在目标集群的平台 namespace 执行）：
+在部署仓根目录运行。先确认 kubectl 当前上下文指向目标集群，再指定本次要更新的环境。目录中应已有经过评审的路由 YAML。
 
 ```bash
+env=test
 kubectl create configmap kaiwu-project-routes \
-  --from-file=gateway-routes/<env>/routes/ \
-  --dry-run=client -o yaml | kubectl apply -n kaiwu-<env> -f -
+  --from-file="gateway-routes/$env/routes/" \
+  --dry-run=client -o yaml | kubectl apply -n "kaiwu-$env" -f -
 ```
 
 单仓或本地部署可以改用 chart 的 `gateway.managedRoutes`，两者互斥。
