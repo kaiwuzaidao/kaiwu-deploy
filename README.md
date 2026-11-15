@@ -38,6 +38,7 @@ scripts/
 # 1. 替换 platform/ 下的 REPLACE_ME_ 占位符（仓库地址、镜像仓库、数据库、域名、tag）
 # 2. 自检
 bash scripts/check.sh
+# 即使返回成功，也要检查目标环境的 YAML：脚本对未替换的占位符只提示。
 # 3. 接入 ArgoCD
 kubectl apply -f platform/argocd/appproject.yaml
 kubectl apply -f platform/apps/test.yaml
@@ -46,7 +47,8 @@ kubectl apply -f platform/apps/test.yaml
 新增一个业务项目：
 
 ```bash
-./scripts/new-project.sh <projectCode>
+# 在本仓根目录执行，使用已在平台登记的项目编码
+./scripts/new-project.sh "${PROJECT_CODE:?请先设置项目编码}"
 # 替换新生成文件里的 REPLACE_ME_，评审后合入
 ```
 
